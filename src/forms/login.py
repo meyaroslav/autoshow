@@ -23,9 +23,9 @@ class LoginForm(QWidget):
 
     def open_form(self, role):
         if role == "admin":
-            self.role_form = AdminForm()
+            self.form = AdminForm()
         else:
             QMessageBox.warning(self, "Ошибка", f"Неизвестная роль.")
 
-        self.role_form.show()
+        self.form.show()
         self.close()
