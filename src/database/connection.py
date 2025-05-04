@@ -1,6 +1,6 @@
 import psycopg2
 
-def db_connection():
+def get_connection():
     return psycopg2.connect(
         dbname="autoshow",
         user="postgres",

@@ -1,7 +1,7 @@
-from src.database.connection import db_connection
+from src.database.connection import get_connection
 
 def auth(login: str, password: str):
-    conn = db_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("SELECT role FROM users WHERE login = %s AND password = %s", (login, password))

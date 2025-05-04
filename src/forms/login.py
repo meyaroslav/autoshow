@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QMessageBox
+
 from src.design.login import Ui_LoginForm
 from src.logic.login import auth
 from src.forms.admin import AdminForm

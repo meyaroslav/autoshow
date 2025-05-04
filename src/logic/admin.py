@@ -1,7 +1,7 @@
-from src.database.connection import db_connection
+from src.database.connection import get_connection
 
 def cars_data():
-    conn = db_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
@@ -31,7 +31,7 @@ def cars_data():
     return res, col
 
 def clients_data():
-    conn = db_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
@@ -50,7 +50,7 @@ def clients_data():
     return res, col
 
 def sales_data():
-    conn = db_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
@@ -72,7 +72,7 @@ def sales_data():
     return res, col
 
 def users_data():
-    conn = db_connection()
+    conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("""
@@ -90,76 +90,12 @@ def users_data():
 
     return res, col
 
-def get_brands():
-    conn = db_connection()
+def delete_car_by_vin(vin):
+    conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("SELECT id, name FROM brands")
-    res = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return res
-
-def get_models():
-    conn = db_connection()
-    cur = conn.cursor()
-
-    cur.execute("SELECT id, name FROM models")
-    res = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return res
-
-def get_colors():
-    conn = db_connection()
-    cur = conn.cursor()
-
-    cur.execute("SELECT id, name FROM colors")
-    res = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return res
-
-def get_transmissions():
-    conn = db_connection()
-    cur = conn.cursor()
-
-    cur.execute("SELECT id, name FROM transmissions")
-    res = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return res
-
-def get_statuses():
-    conn = db_connection()
-    cur = conn.cursor()
-
-    cur.execute("SELECT id, name FROM status")
-    res = cur.fetchall()
-
-    cur.close()
-    conn.close()
-
-    return res
-
-def insert_car(vin, brand_id, model_id, color_id, transmission_id, year, mileage, price):
-    conn = db_connection()
-    cur = conn.cursor()
-
-    status_id = 1
-    cur.execute("""
-        INSERT INTO cars (vin, brand_id, model_id, color_id, transmission_id, year, mileage, price, status_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """, (vin, brand_id, model_id, color_id, transmission_id, year, mileage, price, status_id))
-
+    cur.execute("DELETE FROM cars WHERE vin = %s", (vin,))
     conn.commit()
+
     cur.close()
     conn.close()
