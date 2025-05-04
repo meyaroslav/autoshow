@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QMessageBox
 from PyQt6.QtCore import pyqtSignal
+
 from src.design.add_car import Ui_AddCarForm
 from src.logic.add_car import (
     add_car,
