@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="cars_tab">
        <attribute name="title">
@@ -100,7 +100,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="brand_combo_box"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_2">
@@ -110,7 +110,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="comboBox_2"/>
+           <widget class="QComboBox" name="model_combo_box"/>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_3">
@@ -120,7 +120,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QComboBox" name="comboBox_3"/>
+           <widget class="QComboBox" name="color_combo_box"/>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_4">
@@ -130,7 +130,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QComboBox" name="comboBox_4"/>
+           <widget class="QComboBox" name="transmission_combo_box"/>
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_7">
@@ -140,7 +140,7 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QComboBox" name="comboBox_9"/>
+           <widget class="QComboBox" name="status_combo_box"/>
           </item>
          </layout>
         </widget>
@@ -169,7 +169,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="from_mileage_line_edit"/>
           </item>
           <item row="1" column="2">
            <widget class="QLabel" name="label_9">
@@ -179,7 +179,7 @@
            </widget>
           </item>
           <item row="1" column="3">
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="to_mileage_line_edit"/>
           </item>
           <item row="2" column="0" colspan="2">
            <widget class="QLabel" name="label_5">
@@ -196,7 +196,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QLineEdit" name="lineEdit_6"/>
+           <widget class="QLineEdit" name="from_year_line_edit"/>
           </item>
           <item row="3" column="2">
            <widget class="QLabel" name="label_20">
@@ -206,7 +206,7 @@
            </widget>
           </item>
           <item row="3" column="3">
-           <widget class="QLineEdit" name="lineEdit_5"/>
+           <widget class="QLineEdit" name="to_year_line_edit"/>
           </item>
          </layout>
         </widget>
@@ -221,14 +221,14 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="search_button">
             <property name="text">
              <string>Поиск</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="cancel_button">
             <property name="text">
              <string>Отмена</string>
             </property>

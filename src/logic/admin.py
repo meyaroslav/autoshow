@@ -99,3 +99,87 @@ def delete_car_by_vin(vin):
 
     cur.close()
     conn.close()
+
+def get_all_filters():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT name FROM brands")
+    brands = [row[0] for row in cur.fetchall()]
+
+    cur.execute("SELECT name FROM models")
+    models = [row[0] for row in cur.fetchall()]
+
+    cur.execute("SELECT name FROM colors")
+    colors = [row[0] for row in cur.fetchall()]
+
+    cur.execute("SELECT name FROM transmissions")
+    transmissions = [row[0] for row in cur.fetchall()]
+
+    cur.execute("SELECT name FROM status")
+    status = [row[0] for row in cur.fetchall()]
+
+    conn.close()
+
+    return {
+        "brands": brands,
+        "models": models,
+        "colors": colors,
+        "transmissions": transmissions,
+        "status": status,
+    }
+
+def filter_cars(filters: dict):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+    SELECT cars.vin, brands.name, models.name, colors.name,
+           transmissions.name, cars.year, cars.mileage, cars.price, status.name
+    FROM cars
+    JOIN brands ON cars.brand_id = brands.id
+    JOIN models ON cars.model_id = models.id
+    JOIN colors ON cars.color_id = colors.id
+    JOIN transmissions ON cars.transmission_id = transmissions.id
+    JOIN status ON cars.status_id = status.id
+    WHERE 1=1
+    """
+    params = []
+
+    if filters["brand"]:
+        query += " AND brands.name = %s"
+        params.append(filters["brand"])
+    if filters["model"]:
+        query += " AND models.name = %s"
+        params.append(filters["model"])
+    if filters["color"]:
+        query += " AND colors.name = %s"
+        params.append(filters["color"])
+    if filters["transmission"]:
+        query += " AND transmissions.name = %s"
+        params.append(filters["transmission"])
+    if filters["status"]:
+        query += " AND status.name = %s"
+        params.append(filters["status"])
+    if filters["mileage_min"] is not None:
+        query += " AND cars.mileage >= %s"
+        params.append(filters["mileage_min"])
+    if filters["mileage_max"] is not None:
+        query += " AND cars.mileage <= %s"
+        params.append(filters["mileage_max"])
+    if filters["year_min"] is not None:
+        query += " AND cars.year >= %s"
+        params.append(filters["year_min"])
+    if filters["year_max"] is not None:
+        query += " AND cars.year <= %s"
+        params.append(filters["year_max"])
+
+    cur.execute(query, tuple(params))
+    rows = cur.fetchall()
+    conn.close()
+
+    col_names = [
+        "VIN", "Марка", "Модель", "Цвет", "Тип трансмиссии",
+        "Год выпуска", "Пробег", "Цена", "Статус"
+    ]
+    return rows, col_names

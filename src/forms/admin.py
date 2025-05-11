@@ -8,6 +8,8 @@ from src.logic.admin import clients_data
 from src.logic.admin import sales_data
 from src.logic.admin import users_data
 from src.logic.admin import delete_car_by_vin
+from src.logic.admin import get_all_filters
+from src.logic.admin import filter_cars
 
 class AdminForm(QMainWindow):
     def __init__(self):
@@ -18,9 +20,12 @@ class AdminForm(QMainWindow):
         self.load_clients_data()
         self.load_sales_data()
         self.load_users_data()
+        self.load_combo_box()
 
         self.ui.add_button.clicked.connect(self.open_add_car_form)
         self.ui.delete_button.clicked.connect(self.delete_car)
+        self.ui.search_button.clicked.connect(self.search_filters)
+        self.ui.cancel_button.clicked.connect(self.clear_filters)
 
     def load_cars_data(self):
         cars, col_names = cars_data()
@@ -100,3 +105,65 @@ class AdminForm(QMainWindow):
                 self.load_cars_data()
             except Exception as e:
                 QMessageBox.warning(self, "Ошибка", str(e))
+
+    # def edit_car(self):
+
+    def load_combo_box(self):
+        filters = get_all_filters()
+
+        def fill_combo_box(combo_box, values):
+            combo_box.clear()
+            combo_box.addItem("")
+            combo_box.addItems(values)
+
+        fill_combo_box(self.ui.brand_combo_box, filters["brands"])
+        fill_combo_box(self.ui.model_combo_box, filters["models"])
+        fill_combo_box(self.ui.color_combo_box, filters["colors"])
+        fill_combo_box(self.ui.transmission_combo_box, filters["transmissions"])
+        fill_combo_box(self.ui.status_combo_box, filters["status"])
+
+    def search_filters(self):
+        brand = self.ui.brand_combo_box.currentText()
+        model = self.ui.model_combo_box.currentText()
+        color = self.ui.color_combo_box.currentText()
+        transmission = self.ui.transmission_combo_box.currentText()
+        status = self.ui.status_combo_box.currentText()
+        mileage_min = self.ui.from_mileage_line_edit.text()
+        mileage_max = self.ui.to_mileage_line_edit.text()
+        year_min = self.ui.from_year_line_edit.text()
+        year_max = self.ui.to_year_line_edit.text()
+
+        filters = {
+            "brand": brand if brand else None,
+            "model": model if model else None,
+            "color": color if color else None,
+            "transmission": transmission if transmission else None,
+            "status": status if status else None,
+            "mileage_min": int(mileage_min) if mileage_min else None,
+            "mileage_max": int(mileage_max) if mileage_max else None,
+            "year_min": int(year_min) if year_min else None,
+            "year_max": int(year_max) if year_max else None,
+        }
+
+        cars, col_names = filter_cars(filters)
+        model = QStandardItemModel(len(cars), len(col_names))
+        model.setHorizontalHeaderLabels(col_names)
+
+        for row_idx, row_data in enumerate(cars):
+            for col_idx, value in enumerate(row_data):
+                model.setItem(row_idx, col_idx, QStandardItem(str(value)))
+
+        self.ui.tableView.setModel(model)
+        self.ui.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+
+    def clear_filters(self):
+        self.ui.brand_combo_box.setCurrentIndex(-1)
+        self.ui.model_combo_box.setCurrentIndex(-1)
+        self.ui.color_combo_box.setCurrentIndex(-1)
+        self.ui.transmission_combo_box.setCurrentIndex(-1)
+        self.ui.status_combo_box.setCurrentIndex(-1)
+        self.ui.from_mileage_line_edit.clear()
+        self.ui.to_mileage_line_edit.clear()
+        self.ui.from_year_line_edit.clear()
+        self.ui.to_year_line_edit.clear()
+        self.load_cars_data()
