@@ -1,7 +1,5 @@
 from src.database.connection import get_connection
 
-from src.database.connection import get_connection
-
 def get_all_brands():
     conn = get_connection()
     cur = conn.cursor()
