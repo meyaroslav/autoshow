@@ -100,6 +100,57 @@ def delete_car_by_vin(vin):
     cur.close()
     conn.close()
 
+def get_car_by_vin(vin):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT cars.vin, brands.name, models.name, colors.name,
+               transmissions.name, cars.year, cars.mileage, cars.price, status.name
+        FROM cars
+        JOIN brands ON cars.brand_id = brands.id
+        JOIN models ON cars.model_id = models.id
+        JOIN colors ON cars.color_id = colors.id
+        JOIN transmissions ON cars.transmission_id = transmissions.id
+        JOIN status ON cars.status_id = status.id
+        WHERE cars.vin = %s
+    """, (vin,))
+
+    car_data = cur.fetchone()
+    conn.close()
+
+    if car_data:
+        return car_data
+    else:
+        raise ValueError("Автомобиль с таким VIN не найден")
+
+def update_car(vin, brand, model, color, transmission, year, mileage, price):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT id FROM brands WHERE name = %s", (brand,))
+    brand_id = cur.fetchone()[0]
+
+    cur.execute("SELECT id FROM models WHERE name = %s", (model,))
+    model_id = cur.fetchone()[0]
+
+    cur.execute("SELECT id FROM colors WHERE name = %s", (color,))
+    color_id = cur.fetchone()[0]
+
+    cur.execute("SELECT id FROM transmissions WHERE name = %s", (transmission,))
+    transmission_id = cur.fetchone()[0]
+
+    cur.execute("""
+        UPDATE cars
+        SET brand_id = %s, model_id = %s, color_id = %s, transmission_id = %s,
+            year = %s, mileage = %s, price = %s
+        WHERE vin = %s
+    """, (brand_id, model_id, color_id, transmission_id, year, mileage, price, vin))
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
 def get_all_filters():
     conn = get_connection()
     cur = conn.cursor()

@@ -28,6 +28,9 @@ create table brands (
 insert into brands values (1, 'Toyota');
 insert into brands values (2, 'BMW');
 insert into brands values (3, 'Ford');
+insert into brands values (4, 'Audi');
+insert into brands values (5, 'Mercedes-Benz');
+insert into brands values (6, 'Volkswagen');
 
 create table models (
     id serial primary key,
@@ -38,6 +41,15 @@ create table models (
 insert into models values (1, 'Camry', 1);
 insert into models values (2, 'X5', 2);
 insert into models values (3, 'Focus', 3);
+insert into models values (4, 'A3', 4);
+insert into models values (5, 'A4', 4);
+insert into models values (6, 'A6', 4);
+insert into models values (7, 'C-Class', 5);
+insert into models values (8, 'E-Class', 5);
+insert into models values (9, 'S-Class', 5);
+insert into models values (10, 'Polo', 6);
+insert into models values (11, 'Jetta', 6);
+insert into models values (12, 'Tiguan', 6);
 
 create table colors (
     id serial primary key,

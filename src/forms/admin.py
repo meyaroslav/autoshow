@@ -1,13 +1,15 @@
-from PyQt6.QtWidgets import QMainWindow, QHeaderView, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QHeaderView, QMessageBox, QTableWidgetItem
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 
 from src.design.admin import Ui_AdminForm
 from src.forms.add_car import AddCarForm
+from src.forms.edit_car import EditCarForm
 from src.logic.admin import cars_data
 from src.logic.admin import clients_data
 from src.logic.admin import sales_data
 from src.logic.admin import users_data
 from src.logic.admin import delete_car_by_vin
+from src.logic.admin import get_car_by_vin
 from src.logic.admin import get_all_filters
 from src.logic.admin import filter_cars
 
@@ -24,6 +26,7 @@ class AdminForm(QMainWindow):
 
         self.ui.add_button.clicked.connect(self.open_add_car_form)
         self.ui.delete_button.clicked.connect(self.delete_car)
+        self.ui.edit_button.clicked.connect(self.open_edit_car_form)
         self.ui.search_button.clicked.connect(self.search_filters)
         self.ui.cancel_button.clicked.connect(self.clear_filters)
 
@@ -106,7 +109,23 @@ class AdminForm(QMainWindow):
             except Exception as e:
                 QMessageBox.warning(self, "Ошибка", str(e))
 
-    # def edit_car(self):
+    def open_edit_car_form(self):
+        model = self.ui.tableView.model()
+        selection_model = self.ui.tableView.selectionModel()
+        selected_rows = selection_model.selectedRows()
+
+        if not selected_rows:
+            QMessageBox.warning(self, "Ошибка", "Выберите автомобиль для редактирования")
+            return
+
+        row = selected_rows[0].row()
+        vin = model.item(row, 0).text()
+
+        car_data = get_car_by_vin(vin)
+
+        self.form = EditCarForm(car_data)
+        self.form.car_updated.connect(self.load_cars_data)
+        self.form.show()
 
     def load_combo_box(self):
         filters = get_all_filters()
