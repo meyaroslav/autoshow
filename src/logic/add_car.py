@@ -40,6 +40,19 @@ def get_all_transmissions():
     conn.close()
     return transmissions
 
+def get_models_for_brand(brand_name):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT id FROM brands WHERE name = %s", (brand_name,))
+    brand_id = cur.fetchone()[0]
+
+    cur.execute("SELECT name FROM models WHERE brand_id = %s", (brand_id,))
+    models = [row[0] for row in cur.fetchall()]
+
+    conn.close()
+    return models
+
 def add_car(vin, brand, model, color, transmission, year, mileage, price):
     conn = get_connection()
     cur = conn.cursor()
