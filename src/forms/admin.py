@@ -1,9 +1,11 @@
 from PyQt6.QtWidgets import QMainWindow, QHeaderView, QMessageBox, QTableWidgetItem
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from PyQt6 import QtCore
 
 from src.design.admin import Ui_AdminForm
 from src.forms.add_car import AddCarForm
 from src.forms.edit_car import EditCarForm
+from src.forms.add_sale import AddSaleForm
 from src.logic.admin import cars_data
 from src.logic.admin import clients_data
 from src.logic.admin import sales_data
@@ -12,6 +14,7 @@ from src.logic.admin import delete_car_by_vin
 from src.logic.admin import get_car_by_vin
 from src.logic.admin import get_all_filters
 from src.logic.admin import filter_cars
+from src.logic.admin import filter_sales
 
 class AdminForm(QMainWindow):
     def __init__(self):
@@ -23,12 +26,16 @@ class AdminForm(QMainWindow):
         self.load_sales_data()
         self.load_users_data()
         self.load_combo_box()
+        self.load_client_filter_combo_box()
 
         self.ui.add_button.clicked.connect(self.open_add_car_form)
         self.ui.delete_button.clicked.connect(self.delete_car)
         self.ui.edit_button.clicked.connect(self.open_edit_car_form)
+        self.ui.add_button_4.clicked.connect(self.open_add_sale_form)
         self.ui.search_button.clicked.connect(self.search_filters)
         self.ui.cancel_button.clicked.connect(self.clear_filters)
+        self.ui.search_button_2.clicked.connect(self.search_sales_filters)
+        self.ui.cancel_button_2.clicked.connect(self.clear_sales_filters)
 
     def load_cars_data(self):
         cars, col_names = cars_data()
@@ -63,8 +70,8 @@ class AdminForm(QMainWindow):
         model.setHorizontalHeaderLabels(col_names)
 
         for row_idx, row_data in enumerate(sales):
-            for col_inx, value in enumerate(row_data):
-                model.setItem(row_idx, col_inx, QStandardItem(str(value)))
+            for col_idx, value in enumerate(row_data):
+                model.setItem(row_idx, col_idx, QStandardItem(str(value)))
 
         self.ui.tableView_3.setModel(model)
         self.ui.tableView_3.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
@@ -186,3 +193,56 @@ class AdminForm(QMainWindow):
         self.ui.from_year_line_edit.clear()
         self.ui.to_year_line_edit.clear()
         self.load_cars_data()
+
+    def open_add_sale_form(self):
+        self.form = AddSaleForm()
+        self.form.sale_added.connect(self.update_tables)
+        self.form.show()
+
+    def update_tables(self):
+        self.load_cars_data()
+        self.load_sales_data()
+
+    def search_sales_filters(self):
+        date_from = self.ui.from_date_edit.date().toString('yyyy-MM-dd')
+        date_to = self.ui.to_date_edit.date().toString('yyyy-MM-dd')
+        price_from = self.ui.from_sum_line_edit.text()
+        price_to = self.ui.to_sum_line_edit.text()
+        client = self.ui.client_combo_box.currentText()
+
+        filters = {
+            "date_from": date_from if date_from else None,
+            "date_to": date_to if date_to else None,
+            "price_from": float(price_from) if price_from else None,
+            "price_to": float(price_to) if price_to else None,
+            "client": client if client else None
+        }
+
+        try:
+            rows, columns = filter_sales(filters)
+            model = QStandardItemModel(len(rows), len(columns))
+            model.setHorizontalHeaderLabels(columns)
+
+            for row_idx, row_data in enumerate(rows):
+                for col_idx, value in enumerate(row_data):
+                    model.setItem(row_idx, col_idx, QStandardItem(str(value)))
+
+            self.ui.tableView_3.setModel(model)
+            self.ui.tableView_3.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        except Exception as e:
+            QMessageBox.warning(self, "Ошибка", str(e))
+
+    def load_client_filter_combo_box(self):
+        from src.logic.add_sale import get_clients  # Импортируем здесь, чтобы избежать циклического импорта
+        clients = get_clients()
+        self.ui.client_combo_box.clear()
+        self.ui.client_combo_box.addItem("")
+        self.ui.client_combo_box.addItems([client[0] for client in clients])
+
+    def clear_sales_filters(self):
+        self.ui.from_date_edit.setDate(QtCore.QDate(2000, 1, 1))
+        self.ui.to_date_edit.setDate(QtCore.QDate.currentDate())
+        self.ui.from_sum_line_edit.clear()
+        self.ui.to_sum_line_edit.clear()
+        self.ui.client_combo_box.setCurrentIndex(-1)
+        self.load_sales_data()

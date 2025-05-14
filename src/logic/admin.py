@@ -53,16 +53,21 @@ def sales_data():
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute("""
+    cur.execute(""" 
         SELECT 
-            cars.vin AS "VIN автомобиля",
             clients.full_name AS "Клиент",
+            cars.vin AS "VIN",
+            CONCAT(brands.name, ' ', models.name, ' ', colors.name) AS "Автомобиль",
             sales.date AS "Дата продажи",
             sales.price AS "Цена"
         FROM sales
         JOIN cars ON sales.car_id = cars.id
-        JOIN clients ON sales.client_id = clients.id;
+        JOIN clients ON sales.client_id = clients.id
+        JOIN brands ON cars.brand_id = brands.id
+        JOIN models ON cars.model_id = models.id
+        JOIN colors ON cars.color_id = colors.id
     """)
+
     res = cur.fetchall()
     col = [desc[0] for desc in cur.description]
 
@@ -233,4 +238,50 @@ def filter_cars(filters: dict):
         "VIN", "Марка", "Модель", "Цвет", "Тип трансмиссии",
         "Год выпуска", "Пробег", "Цена", "Статус"
     ]
+    return rows, col_names
+
+def filter_sales(filters: dict):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT 
+            clients.full_name,
+            cars.vin,
+            CONCAT(brands.name, ' ', models.name, ' ', colors.name) AS car_info,
+            sales.date,
+            sales.price
+        FROM sales
+        JOIN clients ON sales.client_id = clients.id
+        JOIN cars ON sales.car_id = cars.id
+        JOIN brands ON cars.brand_id = brands.id
+        JOIN models ON cars.model_id = models.id
+        JOIN colors ON cars.color_id = colors.id
+        WHERE 1=1
+    """
+    params = []
+
+    if filters["client"]:
+        query += " AND clients.full_name = %s"
+        params.append(filters["client"])
+    if filters["date_from"]:
+        query += " AND sales.date >= %s"
+        params.append(filters["date_from"])
+    if filters["date_to"]:
+        query += " AND sales.date <= %s"
+        params.append(filters["date_to"])
+    if filters["price_from"]:
+        query += " AND sales.price >= %s"
+        params.append(filters["price_from"])
+    if filters["price_to"]:
+        query += " AND sales.price <= %s"
+        params.append(filters["price_to"])
+
+    cur.execute(query, tuple(params))
+    rows = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    col_names = ["Клиент", "VIN", "Автомобиль", "Дата продажи", "Цена"]
     return rows, col_names
