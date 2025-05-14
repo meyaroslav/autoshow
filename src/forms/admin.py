@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QHeaderView, QMessageBox, QTableWidgetItem
+from PyQt6.QtWidgets import QMainWindow, QHeaderView, QMessageBox, QTableWidgetItem, QFileDialog
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6 import QtCore
 
@@ -15,6 +15,7 @@ from src.logic.admin import get_car_by_vin
 from src.logic.admin import get_all_filters
 from src.logic.admin import filter_cars
 from src.logic.admin import filter_sales
+from src.logic.admin import generate_sales_report
 
 class AdminForm(QMainWindow):
     def __init__(self):
@@ -36,6 +37,7 @@ class AdminForm(QMainWindow):
         self.ui.cancel_button.clicked.connect(self.clear_filters)
         self.ui.search_button_2.clicked.connect(self.search_sales_filters)
         self.ui.cancel_button_2.clicked.connect(self.clear_sales_filters)
+        self.ui.report_button.clicked.connect(self.generate_report)
 
     def load_cars_data(self):
         cars, col_names = cars_data()
@@ -233,7 +235,7 @@ class AdminForm(QMainWindow):
             QMessageBox.warning(self, "Ошибка", str(e))
 
     def load_client_filter_combo_box(self):
-        from src.logic.add_sale import get_clients  # Импортируем здесь, чтобы избежать циклического импорта
+        from src.logic.add_sale import get_clients
         clients = get_clients()
         self.ui.client_combo_box.clear()
         self.ui.client_combo_box.addItem("")
@@ -246,3 +248,27 @@ class AdminForm(QMainWindow):
         self.ui.to_sum_line_edit.clear()
         self.ui.client_combo_box.setCurrentIndex(-1)
         self.load_sales_data()
+
+    def generate_report(self):
+        filters = self.get_sales_filters()
+
+        try:
+            report_path = generate_sales_report(filters)
+        except Exception as e:
+            QMessageBox.warning(self, "Ошибка", str(e))
+
+    def get_sales_filters(self):
+        date_from = self.ui.from_date_edit.date().toString('yyyy-MM-dd')
+        date_to = self.ui.to_date_edit.date().toString('yyyy-MM-dd')
+        price_from = self.ui.from_sum_line_edit.text()
+        price_to = self.ui.to_sum_line_edit.text()
+        client = self.ui.client_combo_box.currentText()
+
+        filters = {
+            "date_from": date_from if date_from else None,
+            "date_to": date_to if date_to else None,
+            "price_from": float(price_from) if price_from else None,
+            "price_to": float(price_to) if price_to else None,
+            "client": client if client else None
+        }
+        return filters

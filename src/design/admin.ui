@@ -472,9 +472,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="report_button">
            <property name="text">
-            <string>Отчет</string>
+            <string>Оформить отчет</string>
            </property>
           </widget>
          </item>

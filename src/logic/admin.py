@@ -1,3 +1,6 @@
+import openpyxl
+from openpyxl.utils import get_column_letter
+from PyQt6.QtWidgets import QMessageBox, QFileDialog
 from src.database.connection import get_connection
 
 def cars_data():
@@ -285,3 +288,69 @@ def filter_sales(filters: dict):
 
     col_names = ["Клиент", "VIN", "Автомобиль", "Дата продажи", "Цена"]
     return rows, col_names
+
+def generate_sales_report(filters=None):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT 
+            clients.full_name,
+            cars.vin,
+            CONCAT(brands.name, ' ', models.name, ' ', colors.name) AS car_info,
+            sales.date,
+            sales.price
+        FROM sales
+        JOIN clients ON sales.client_id = clients.id
+        JOIN cars ON sales.car_id = cars.id
+        JOIN brands ON cars.brand_id = brands.id
+        JOIN models ON cars.model_id = models.id
+        JOIN colors ON cars.color_id = colors.id
+        WHERE 1=1
+    """
+    params = []
+
+    if filters:
+        if filters.get("client"):
+            query += " AND clients.full_name = %s"
+            params.append(filters["client"])
+        if filters.get("date_from"):
+            query += " AND sales.date >= %s"
+            params.append(filters["date_from"])
+        if filters.get("date_to"):
+            query += " AND sales.date <= %s"
+            params.append(filters["date_to"])
+        if filters.get("price_from"):
+            query += " AND sales.price >= %s"
+            params.append(filters["price_from"])
+        if filters.get("price_to"):
+            query += " AND sales.price <= %s"
+            params.append(filters["price_to"])
+
+    cur.execute(query, tuple(params))
+    rows = cur.fetchall()
+    col_names = ["Клиент", "VIN", "Автомобиль", "Дата продажи", "Цена"]
+
+    file_path, _ = QFileDialog.getSaveFileName(None, "Сохранить отчет", "", "Excel Files (*.xlsx)")
+
+    if not file_path:
+        QMessageBox.warning(None, "Ошибка", "Не выбран путь для сохранения отчета.")
+        return
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Продажи"
+
+    for col_num, col_name in enumerate(col_names, start=1):
+        col_letter = get_column_letter(col_num)
+        ws[f"{col_letter}1"] = col_name
+
+    for row_num, row_data in enumerate(rows, start=2):
+        for col_num, value in enumerate(row_data, start=1):
+            col_letter = get_column_letter(col_num)
+            ws[f"{col_letter}{row_num}"] = value
+
+    wb.save(file_path)
+
+    conn.close()
+    QMessageBox.information(None, "Отчет", f"Отчет успешно сгенерирован и сохранен по пути: {file_path}")
