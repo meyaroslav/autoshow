@@ -75,7 +75,6 @@ create table status (
 
 insert into status values (1, 'В наличии');
 insert into status values (2, 'Продан');
-insert into status values (3, 'Зарезервирован');
 
 create table cars (
     id serial primary key,
@@ -90,10 +89,6 @@ create table cars (
     status_id int not null references status(id) on delete cascade
 );
 
-insert into cars values (1, 'JTNBB46K083012345', 1, 1, 1, 2, 2022, 15000, 2000000.00, 1);
-insert into cars values (2, 'WBAXY01020F123456', 2, 2, 2, 2, 2023, 5000, 4500000.00, 1);
-insert into cars values (3, 'WF0GXXGBBGHE12345', 3, 3, 3, 1, 2021, 30000, 1500000.00, 3);
-
 create table sales (
     id serial primary key,
     car_id int not null references cars(id) on delete cascade,
@@ -101,7 +96,3 @@ create table sales (
     date date not null,
     price numeric(12, 2) not null
 );
-
-insert into sales values (1, 1, 1, '2025-03-20', 1950000.00);
-insert into sales values (2, 2, 2, '2025-04-01', 4400000.00);
-insert into sales values (3, 3, 3, '2025-04-15', 1450000.00);

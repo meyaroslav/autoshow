@@ -248,7 +248,7 @@
           <x>10</x>
           <y>10</y>
           <width>761</width>
-          <height>451</height>
+          <height>421</height>
          </rect>
         </property>
        </widget>
@@ -256,7 +256,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>470</y>
+          <y>440</y>
           <width>251</width>
           <height>25</height>
          </rect>
@@ -289,14 +289,62 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>500</y>
+          <y>470</y>
           <width>761</width>
-          <height>51</height>
+          <height>81</height>
          </rect>
         </property>
         <property name="title">
          <string>Поиск:</string>
         </property>
+        <widget class="QWidget" name="layoutWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>660</x>
+           <y>10</y>
+           <width>77</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QPushButton" name="search_button_3">
+            <property name="text">
+             <string>Поиск</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="cancel_button_3">
+            <property name="text">
+             <string>Отмена</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>21</x>
+           <y>30</y>
+           <width>281</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <layout class="QFormLayout" name="formLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>Клиент:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="client_line_edit"/>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
       <widget class="QWidget" name="sales_tab">
@@ -309,7 +357,7 @@
           <x>10</x>
           <y>10</y>
           <width>761</width>
-          <height>361</height>
+          <height>341</height>
          </rect>
         </property>
        </widget>
@@ -317,9 +365,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>410</y>
+          <y>390</y>
           <width>761</width>
-          <height>141</height>
+          <height>161</height>
          </rect>
         </property>
         <property name="title">
@@ -329,9 +377,9 @@
          <property name="geometry">
           <rect>
            <x>660</x>
-           <y>40</y>
+           <y>50</y>
            <width>77</width>
-           <height>54</height>
+           <height>61</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -351,13 +399,13 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>30</x>
            <y>20</y>
            <width>381</width>
-           <height>81</height>
+           <height>91</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
@@ -417,11 +465,11 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>30</x>
-           <y>110</y>
+           <y>120</y>
            <width>381</width>
            <height>21</height>
           </rect>
@@ -439,19 +487,48 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="">
+         <property name="geometry">
+          <rect>
+           <x>480</x>
+           <y>50</y>
+           <width>121</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QPushButton" name="report_button">
+            <property name="text">
+             <string>Оформить отчет</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>Статистика продаж</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
-       <widget class="QWidget" name="layoutWidget_3">
+       <widget class="QWidget" name="layoutWidget_6">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>380</y>
-          <width>332</width>
+          <y>360</y>
+          <width>251</width>
           <height>25</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QPushButton" name="add_button_4">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
            <property name="text">
             <string>Добавить</string>
            </property>
@@ -471,13 +548,6 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QPushButton" name="report_button">
-           <property name="text">
-            <string>Оформить отчет</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </widget>
@@ -491,7 +561,7 @@
           <x>10</x>
           <y>10</y>
           <width>761</width>
-          <height>451</height>
+          <height>421</height>
          </rect>
         </property>
        </widget>
@@ -499,7 +569,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>470</y>
+          <y>440</y>
           <width>251</width>
           <height>25</height>
          </rect>
@@ -532,14 +602,62 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>500</y>
+          <y>470</y>
           <width>761</width>
-          <height>51</height>
+          <height>81</height>
          </rect>
         </property>
         <property name="title">
          <string>Поиск:</string>
         </property>
+        <widget class="QWidget" name="layoutWidget_4">
+         <property name="geometry">
+          <rect>
+           <x>21</x>
+           <y>30</y>
+           <width>281</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>Пользователь:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="user_line_edit"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="layoutWidget_5">
+         <property name="geometry">
+          <rect>
+           <x>660</x>
+           <y>10</y>
+           <width>77</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QPushButton" name="search_button_4">
+            <property name="text">
+             <string>Поиск</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="cancel_button_4">
+            <property name="text">
+             <string>Отмена</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
      </widget>

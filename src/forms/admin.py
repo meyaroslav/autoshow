@@ -5,6 +5,8 @@ from PyQt6 import QtCore
 from src.design.admin import Ui_AdminForm
 from src.forms.add_car import AddCarForm
 from src.forms.edit_car import EditCarForm
+from src.forms.add_client import AddClientForm
+from src.forms.edit_client import EditClientForm
 from src.forms.add_sale import AddSaleForm
 from src.logic.admin import cars_data
 from src.logic.admin import clients_data
@@ -14,6 +16,8 @@ from src.logic.admin import delete_car_by_vin
 from src.logic.admin import get_car_by_vin
 from src.logic.admin import get_all_filters
 from src.logic.admin import filter_cars
+from src.logic.admin import get_client_id
+from src.logic.admin import filter_clients_universal
 from src.logic.admin import filter_sales
 from src.logic.admin import generate_sales_report
 
@@ -32,6 +36,11 @@ class AdminForm(QMainWindow):
         self.ui.add_button.clicked.connect(self.open_add_car_form)
         self.ui.delete_button.clicked.connect(self.delete_car)
         self.ui.edit_button.clicked.connect(self.open_edit_car_form)
+        self.ui.add_button_2.clicked.connect(self.open_add_client_form)
+        self.ui.edit_button_2.clicked.connect(self.open_edit_client_form)
+        self.ui.delete_button_2.clicked.connect(self.delete_client)
+        self.ui.search_button_3.clicked.connect(self.search_clients)
+        self.ui.cancel_button_3.clicked.connect(self.clear_client_filters)
         self.ui.add_button_4.clicked.connect(self.open_add_sale_form)
         self.ui.search_button.clicked.connect(self.search_filters)
         self.ui.cancel_button.clicked.connect(self.clear_filters)
@@ -195,6 +204,83 @@ class AdminForm(QMainWindow):
         self.ui.from_year_line_edit.clear()
         self.ui.to_year_line_edit.clear()
         self.load_cars_data()
+
+    def open_add_client_form(self):
+        self.form = AddClientForm()
+        self.form.client_added.connect(self.load_clients_data)
+        self.form.show()
+
+    def delete_client(self):
+        model = self.ui.tableView_2.model()
+        selection_model = self.ui.tableView_2.selectionModel()
+        selected_rows = selection_model.selectedRows()
+
+        if not selected_rows:
+            QMessageBox.warning(self, "Ошибка", "Выберите клиента для удаления")
+            return
+
+        row = selected_rows[0].row()
+        full_name = model.item(row, 0).text()
+
+        reply = QMessageBox.question(
+            self, "Подтверждение",
+            f"Удалить клиента {full_name}?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            try:
+                from src.logic.admin import delete_client_by_full_name
+                delete_client_by_full_name(full_name)
+                QMessageBox.information(self, "Успех", "Клиент удален")
+                self.load_clients_data()
+            except Exception as e:
+                QMessageBox.warning(self, "Ошибка", str(e))
+
+    def open_edit_client_form(self):
+        model = self.ui.tableView_2.model()
+        selection_model = self.ui.tableView_2.selectionModel()
+        selected_rows = selection_model.selectedRows()
+
+        if not selected_rows:
+            QMessageBox.warning(self, "Ошибка", "Выберите клиента для редактирования")
+            return
+
+        row = selected_rows[0].row()
+        full_name = model.item(row, 0).text()
+        phone = model.item(row, 1).text()
+        email = model.item(row, 2).text()
+
+        client_id = get_client_id(full_name, phone, email)
+
+        self.form = EditClientForm(client_id, full_name, phone, email)
+        self.form.client_updated.connect(self.load_clients_data)
+        self.form.show()
+
+    def search_clients(self):
+        query = self.ui.client_line_edit.text().strip()
+
+        if not query:
+            QMessageBox.warning(self, "Ошибка", "Введите данные для поиска")
+            return
+
+        try:
+            rows, columns = filter_clients_universal(query)
+            model = QStandardItemModel(len(rows), len(columns))
+            model.setHorizontalHeaderLabels(columns)
+
+            for row_idx, row_data in enumerate(rows):
+                for col_idx, value in enumerate(row_data):
+                    model.setItem(row_idx, col_idx, QStandardItem(str(value)))
+
+            self.ui.tableView_2.setModel(model)
+            self.ui.tableView_2.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        except Exception as e:
+            QMessageBox.warning(self, "Ошибка", str(e))
+
+    def clear_client_filters(self):
+        self.ui.client_line_edit.clear()
+        self.load_clients_data()
 
     def open_add_sale_form(self):
         self.form = AddSaleForm()

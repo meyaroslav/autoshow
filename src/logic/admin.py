@@ -243,6 +243,53 @@ def filter_cars(filters: dict):
     ]
     return rows, col_names
 
+def get_client_id(full_name, phone, email):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("SELECT id FROM clients  WHERE full_name = %s AND phone = %s AND email = %s", (full_name, phone, email))
+    result = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    if result:
+        return result[0]
+    else:
+        raise ValueError("Клиент не найден")
+
+def delete_client_by_full_name(full_name):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM clients WHERE full_name = %s", (full_name,))
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+def filter_clients_universal(query: str):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    sql = """
+        SELECT full_name AS "ФИО", phone AS "Телефон", email AS "Почта"
+        FROM clients
+        WHERE full_name ILIKE %s
+           OR phone ILIKE %s
+           OR email ILIKE %s
+    """
+    pattern = f"%{query}%"
+    cur.execute(sql, (pattern, pattern, pattern))
+
+    rows = cur.fetchall()
+    columns = [desc[0] for desc in cur.description]
+
+    cur.close()
+    conn.close()
+
+    return rows, columns
+
 def filter_sales(filters: dict):
     conn = get_connection()
     cur = conn.cursor()

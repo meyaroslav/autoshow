@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QMessageBox
 from src.design.login import Ui_LoginForm
 from src.logic.login import auth
 from src.forms.admin import AdminForm
+from src.forms.viewer import ViewerForm
 
 class LoginForm(QWidget):
     def __init__(self):
@@ -25,8 +26,11 @@ class LoginForm(QWidget):
     def open_form(self, role):
         if role == "admin":
             self.form = AdminForm()
+        elif role == "viewer":
+            self.form = ViewerForm()
         else:
             QMessageBox.warning(self, "Ошибка", f"Неизвестная роль.")
+            return
 
         self.form.show()
         self.close()
