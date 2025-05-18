@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QMainWindow, QHeaderView, QMessageBox, QTableWidgetItem, QFileDialog
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 from PyQt6 import QtCore
+from matplotlib import pyplot as plt
 
 from src.design.admin import Ui_AdminForm
 from src.forms.add_car import AddCarForm
@@ -20,6 +21,7 @@ from src.logic.admin import get_client_id
 from src.logic.admin import filter_clients_universal
 from src.logic.admin import filter_sales
 from src.logic.admin import generate_sales_report
+from src.logic.admin import get_sales_stats
 
 class AdminForm(QMainWindow):
     def __init__(self):
@@ -47,6 +49,7 @@ class AdminForm(QMainWindow):
         self.ui.search_button_2.clicked.connect(self.search_sales_filters)
         self.ui.cancel_button_2.clicked.connect(self.clear_sales_filters)
         self.ui.report_button.clicked.connect(self.generate_report)
+        self.ui.statistics_sales_button.clicked.connect(self.show_sales_pie_chart)
 
     def load_cars_data(self):
         cars, col_names = cars_data()
@@ -122,7 +125,7 @@ class AdminForm(QMainWindow):
         if reply == QMessageBox.StandardButton.Yes:
             try:
                 delete_car_by_vin(vin)
-                QMessageBox.information(self, "Успех", "Автомобиль удалён")
+                QMessageBox.information(self, "Успех", "Автомобиль удален")
                 self.load_cars_data()
             except Exception as e:
                 QMessageBox.warning(self, "Ошибка", str(e))
@@ -358,3 +361,30 @@ class AdminForm(QMainWindow):
             "client": client if client else None
         }
         return filters
+
+    def show_sales_pie_chart(self):
+        filters = self.get_sales_filters()
+        data = get_sales_stats(filters)
+
+        if not data:
+            QMessageBox.information(self, "Статистика", "Нет данных для отображения")
+            return
+
+        dates = [row[0].strftime("%d.%m.%Y") for row in data]
+        totals = [float(row[1]) for row in data]
+
+        fig, ax = plt.subplots(figsize=(8, 6))
+        wedges, texts, autotexts = ax.pie(
+            totals,
+            labels=dates,
+            autopct='%1.1f%%',
+            startangle=90,
+            pctdistance=0.85
+        )
+
+        centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+        fig.gca().add_artist(centre_circle)
+
+        ax.set_title("Статистика продаж")
+        plt.tight_layout()
+        plt.show()

@@ -401,3 +401,41 @@ def generate_sales_report(filters=None):
 
     conn.close()
     QMessageBox.information(None, "Отчет", f"Отчет успешно сгенерирован и сохранен по пути: {file_path}")
+
+def get_sales_stats(filters: dict):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    query = """
+        SELECT sales.date, SUM(sales.price)
+        FROM sales
+        JOIN clients ON sales.client_id = clients.id
+        JOIN cars ON sales.car_id = cars.id
+        WHERE 1=1
+    """
+    params = []
+
+    if filters.get("client"):
+        query += " AND clients.full_name = %s"
+        params.append(filters["client"])
+    if filters.get("date_from"):
+        query += " AND sales.date >= %s"
+        params.append(filters["date_from"])
+    if filters.get("date_to"):
+        query += " AND sales.date <= %s"
+        params.append(filters["date_to"])
+    if filters.get("price_from"):
+        query += " AND sales.price >= %s"
+        params.append(filters["price_from"])
+    if filters.get("price_to"):
+        query += " AND sales.price <= %s"
+        params.append(filters["price_to"])
+
+    query += " GROUP BY sales.date ORDER BY sales.date"
+
+    cur.execute(query, tuple(params))
+    result = cur.fetchall()
+
+    cur.close()
+    conn.close()
+    return result
